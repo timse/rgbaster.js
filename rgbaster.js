@@ -54,7 +54,7 @@
 
     getImageData(img, function(data){
 
-              var length        = ( img.width * img.height ) || data.length,
+              var length        = data.length,
                   colorCounts   = {},
                   rgbString     = '',
                   rgb           = [],
