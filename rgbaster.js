@@ -41,7 +41,6 @@
   // RGBaster Object
   // ---------------
   //
-  var BLOCKSIZE = 5;
   var PALETTESIZE = 10;
 
   var RGBaster = {};
@@ -63,9 +62,13 @@
                     palette:  Array.apply(null, new Array(paletteSize)).map(Boolean).map(function(a){ return { name: '0,0,0', count: 0 }; })
                   };
 
-              // Loop over all pixels, in BLOCKSIZE iterations.
               var i = 0;
-              while ( i < length ) {
+              for (; i < length; i += 4) {
+                // dont count transparent pixels
+                if (data[i+3] === 0) {
+                    continue;
+                }
+
                 rgb[0] = data[i];
                 rgb[1] = data[i+1];
                 rgb[2] = data[i+2];
@@ -96,8 +99,6 @@
                   }
                 }
 
-                // Increment!
-                i += BLOCKSIZE * 4;
               }
 
               if ( opts.success ) {
