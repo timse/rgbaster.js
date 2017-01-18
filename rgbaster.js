@@ -94,8 +94,8 @@
                 var palette = mapPalette(colorCounts);
                 palette.length = paletteSize;
                 opts.success({
-                  dominant: makeRGB(palette[0].color),
-                  secondary: palette[1].color,
+                  dominant: palette[0].name,
+                  secondary: palette[1].name,
                   palette:  palette.map(function(c){ return c.name; })
                 });
               }
