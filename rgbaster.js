@@ -34,8 +34,13 @@
   };
 
   var mapPalette = function(palette){
-    return palette.map(function(c){ return makeRGB(c.name); });
-  };
+    var arr = [];
+    for (var prop in palette) {
+      arr.push( {name: makeRGB(prop), count: palette[prop]} )
+    }
+    arr.sort(function(a, b) { return (b.count - a.count) });
+    return arr;
+  }; 
 
 
   // RGBaster Object
@@ -59,9 +64,8 @@
                   rgb           = [],
                   colors        = {
                     dominant: { name: '', count: 0 },
-                    palette:  Array.apply(null, new Array(paletteSize)).map(Boolean).map(function(a){ return { name: '0,0,0', count: 0 }; })
+                    palette:  []
                   };
-
               var i = 0;
               for (; i < length; i += 4) {
                 // dont count transparent pixels
@@ -74,39 +78,25 @@
                 rgb[2] = data[i+2];
                 rgbString = rgb.join(",");
 
-                // Keep track of counts.
-                if ( rgbString in colorCounts ) {
-                  colorCounts[rgbString] = colorCounts[rgbString] + 1;
-                }
-                else{
-                  colorCounts[rgbString] = 1;
-                }
-
-                // Find dominant and palette, ignoring those colors in the exclude list.
+                // Keep track of counts ignoring the colors in the exclude list
                 if ( exclude.indexOf( makeRGB(rgbString) ) === -1 ) {
-                  var colorCount = colorCounts[rgbString];
-                  if ( colorCount > colors.dominant.count ){
-                    colors.dominant.name = rgbString;
-                    colors.dominant.count = colorCount;
-                  } else {
-                    colors.palette.some(function(c){
-                      if ( colorCount > c.count ) {
-                        c.name = rgbString;
-                        c.count = colorCount;
-                        return true;
-                      }
-                    });
+                  if ( rgbString in colorCounts ) {
+                    colorCounts[rgbString] = colorCounts[rgbString] + 1;
+                  }
+                  else{
+                    colorCounts[rgbString] = 1;
                   }
                 }
 
               }
 
               if ( opts.success ) {
-                var palette = mapPalette(colors.palette);
+                var palette = mapPalette(colorCounts);
+                palette.length = paletteSize;
                 opts.success({
-                  dominant: makeRGB(colors.dominant.name),
-                  secondary: palette[0],
-                  palette:  palette
+                  dominant: palette[0].name,
+                  secondary: palette[1].name,
+                  palette:  palette.map(function(c){ return c.name; })
                 });
               }
     });
